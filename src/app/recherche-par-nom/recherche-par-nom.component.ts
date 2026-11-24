@@ -12,7 +12,7 @@ import { SearchFilterPipe } from '../pipes/search-filter.pipe';
   templateUrl: './recherche-par-nom.component.html'
 })
 export class RechercheParNomComponent implements OnInit {
-  allSports!: Sport[];
+  allSports: Sport[] = [];
 
   nomApi = '';
   resultatsApi: Sport[] = [];
@@ -24,14 +24,20 @@ export class RechercheParNomComponent implements OnInit {
   constructor(private sportService: SportService) {}
 
   ngOnInit(): void {
-    this.allSports = this.sportService.listeSports();
-    this.resultatsApi = this.allSports;
-    this.resultatsKeyup = this.allSports;
+    this.sportService.listeSports().subscribe(sps => {
+      this.allSports = sps;
+      this.resultatsApi = sps;
+      this.resultatsKeyup = sps;
+    });
   }
+
   rechercherParApi(): void {
-    this.resultatsApi = this.sportService.rechercherParNom(this.nomApi);
+    this.sportService.rechercherParNom(this.nomApi)
+      .subscribe(sps => this.resultatsApi = sps);
   }
+
   rechercherParKeyup(): void {
-    this.resultatsKeyup = this.sportService.rechercherParNom(this.nomKeyup);
+    this.sportService.rechercherParNom(this.nomKeyup)
+      .subscribe(sps => this.resultatsKeyup = sps);
   }
 }

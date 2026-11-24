@@ -8,27 +8,31 @@ import { AuthService } from '../services/auth.service';
 @Component({
   selector: 'app-sports',
   standalone: true,
-  imports: [CommonModule,RouterLink],
+  imports: [CommonModule, RouterLink],
   templateUrl: './sports.component.html',
   styleUrl: './sports.component.css'
 })
-export class SportsComponent implements OnInit  {
-  sports! : Sport[]; //un tableau de Sport
+export class SportsComponent implements OnInit {
+  sports: Sport[] = [];
+
   constructor(private sportService: SportService,
-              public authService: AuthService) {
-    this.sports = sportService.listeSports();
-   }
+              public authService: AuthService) {}
 
-   ngOnInit() {
+  ngOnInit() {
+    this.chargerSports();
+  }
 
-     }
+  chargerSports() {
+    this.sportService.listeSports().subscribe(sps => {
+      this.sports = sps;
+    });
+  }
 
-     supprimerSport(s: Sport)
-   {
-     // console.log(s);
+  supprimerSport(s: Sport) {
     let conf = confirm("Voulez-vous vraiment supprimer ce sport ?");
-     if (conf)
-       this.sportService.supprimerSport(s);
-   }
-
+    if (conf)
+      this.sportService.supprimerSport(s.idSport!).subscribe(() => {
+        this.chargerSports();
+      });
+  }
 }

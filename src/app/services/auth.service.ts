@@ -41,7 +41,7 @@ export class AuthService {
   }
 
   isAdmin(): Boolean {
-    if (!this.roles) // this.roles == undefined
+    if (!this.roles) 
       return false;
     return (this.roles.indexOf('ADMIN') > -1);
   }

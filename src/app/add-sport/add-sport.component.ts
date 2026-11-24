@@ -16,29 +16,23 @@ import { Groupe } from '../model/groupe.model';
 export class AddSportComponent implements OnInit {
 
   newSport = new Sport();
-  groupes! : Groupe[];
-  newIdgrp! : number;
-
-  message! : string;
-  newGroupe!: Groupe;
+  groupes!: Groupe[];
+  newIdgrp!: number;
+  message!: string;
 
   constructor(private sportService: SportService,
-              private router :Router
-   ) {}
-   ngOnInit() {
-this.groupes = this.sportService.listeGroupes();
-}
+              private router: Router) {}
 
-
-  addSport(){
-   // console.log(this.newSport);
-  this.newGroupe=this.sportService.consulterGroupe(this.newIdgrp);
-   this.newSport.groupeSport = this.newGroupe;
-
-   this.sportService.ajouterSport(this.newSport);
-   //this.message = "Sport "+this.newSport.nomSport +" ajouté avec succès !";
-   this.router.navigate(['sports']);
+  ngOnInit() {
+    this.sportService.listeGroupes().subscribe(grps => {
+      this.groupes = grps._embedded.groupes;
+    });
   }
 
-
+  addSport() {
+    this.newSport.groupeSport = this.groupes.find(g => g.idgrp == this.newIdgrp);
+    this.sportService.ajouterSport(this.newSport).subscribe(() => {
+      this.router.navigate(['sports']);
+    });
+  }
 }

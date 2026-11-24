@@ -9,34 +9,34 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-update-sport',
   standalone: true,
-  imports: [FormsModule,CommonModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './update-sport.component.html',
   styles: ``
 })
 export class UpdateSportComponent implements OnInit {
-  currentSport  = new Sport();
-  groupes! : Groupe[];
-  updatedIdgrp! : number;
+  currentSport = new Sport();
+  groupes: Groupe[] = [];
+  updatedIdgrp!: number;
 
   constructor(private activatedRoute: ActivatedRoute,
-              private router :Router,
-              private sportService: SportService
-             
-) { }
+              private router: Router,
+              private sportService: SportService) {}
 
   ngOnInit() {
-  // console.log(this.route.snapshot.params.id);
-this.currentSport = this.sportService.consulterSport(this.activatedRoute.snapshot. params['id']);
-   this.groupes = this.sportService.listeGroupes();
-   this.updatedIdgrp = this.currentSport.groupeSport?.idgrp!;
+    this.sportService.listeGroupes().subscribe(grps => {
+      this.groupes = grps._embedded.groupes;
+    });
+    this.sportService.consulterSport(this.activatedRoute.snapshot.params['id'])
+      .subscribe(sp => {
+        this.currentSport = sp;
+        this.updatedIdgrp = sp.groupeSport?.idgrp!;
+      });
   }
 
-
-  updateSport()
-  { //console.log(this.currentSport);
-    this.currentSport.groupeSport = this.sportService.consulterGroupe(this.updatedIdgrp);
-    this.sportService.updateSport(this.currentSport);
-    this.router.navigate(['sports']);
+  updateSport() {
+    this.currentSport.groupeSport = this.groupes.find(g => g.idgrp == this.updatedIdgrp);
+    this.sportService.updateSport(this.currentSport).subscribe(() => {
+      this.router.navigate(['sports']);
+    });
   }
-
 }

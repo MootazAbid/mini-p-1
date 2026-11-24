@@ -12,20 +12,21 @@ import { SportService } from '../services/sport.service';
   templateUrl: './recherche-par-groupe.component.html'
 })
 export class RechercheParGroupeComponent implements OnInit {
-  sports!: Sport[];
-  groupes!: Groupe[];
-  idGroupe!: number;
+  sports: Sport[] = [];
+  groupes: Groupe[] = [];
+  idGroupe: number = 0;
 
   constructor(private sportService: SportService) {}
 
   ngOnInit(): void {
-    this.groupes = this.sportService.listeGroupes();
-    this.sports = this.sportService.listeSports();
+    this.sportService.listeGroupes().subscribe(grps => this.groupes = grps._embedded.groupes);
+    this.sportService.listeSports().subscribe(sps => this.sports = sps);
   }
 
   onChange(): void {
-    this.sports = this.idGroupe
+    const obs = this.idGroupe
       ? this.sportService.rechercherParGroupe(this.idGroupe)
       : this.sportService.listeSports();
+    obs.subscribe(sps => this.sports = sps);
   }
 }
